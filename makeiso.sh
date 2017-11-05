@@ -1,27 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 #############################################
 ##### Create temp directory for file manipulation
 TEMPDIR=$$
 mkdir -p $TEMPDIR/isodir/boot/grub
 
 #############################################
-##### Compile source files for i686-elf #####
-
-# i686-elf cross-compilers must be installed in PATH
-i686-elf-as ./src/assembly/boot.s -o $TEMPDIR/boot.o
-
-# This script is designed for kernel written in C
-i686-elf-gcc -c ./src/base/main.c  -o $TEMPDIR/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-
-#############################################
-##### Link compiled files ###################
-
-i686-elf-gcc -T ./src/linker.ld -o $TEMPDIR/myos.bin -ffreestanding -O2 -nostdlib $TEMPDIR/boot.o $TEMPDIR/kernel.o -lgcc
-
-#############################################
 ##### Verify multiboot and grub #############
 
-if grub-file --is-x86-multiboot $TEMPDIR/myos.bin; then
+if grub-file --is-x86-multiboot kroot/boot/myos.kernel; then
   echo multiboot confirmed
 else
   echo the file is not multiboot or grub is not installed
@@ -30,11 +16,15 @@ else
   exit
 fi
 
-
 #############################################
 ##### Create iso file structure then create iso #
-cp ./$TEMPDIR/myos.bin $TEMPDIR/isodir/boot/myos.bin
-cp ./src/grub.cfg $TEMPDIR/isodir/boot/grub/grub.cfg
+cp kroot/boot/myos.kernel $TEMPDIR/isodir/boot/myos.kernel
+
+cat > $TEMPDIR/isodir/boot/grub/grub.cfg << EOF
+menuentry "myos" {
+	multiboot /boot/myos.kernel
+}
+EOF
 
 grub-mkrescue -o builds/myos.iso $TEMPDIR/isodir
 rm -R $TEMPDIR
