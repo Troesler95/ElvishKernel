@@ -38,6 +38,9 @@ stack_bottom:
 .skip 16384 # 16 KiB
 stack_top:
 
+.section .rodata
+	.align 4
+
 /*
 The linker script specifies _start as the entry point to the kernel and the
 bootloader will jump to this position once the kernel has been loaded. It
@@ -62,5 +65,21 @@ movl $stack_top, %esp
 	jmp 1b
 .size _start, . - _start
 
-.section .rodata
-	.align 4
+/*
+.global _gdt_flush
+.type _gdt_flush, @function
+.extern _gp
+_gdt_flush:
+
+	lgdt (_gp)
+	mov $0x10, %ax
+	mov %ax, %ds
+	mov %ax, %es
+	mov %ax, %fs
+	mov %ax, %gs
+	mov %ax, %ss
+	jmp $0x08, $flush
+
+flush:
+	syscall
+*/

@@ -28,6 +28,7 @@ CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
 KERNEL_OBJS:=\
 src/screen.o \
 src/system.o \
+src/gdt.o \
 main.o \
 
 OBJS:=\

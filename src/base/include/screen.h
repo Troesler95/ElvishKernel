@@ -7,8 +7,8 @@
 enum vga_color;
 
 extern void cls();
-extern void putch(unsigned char c);
-extern void puts(unsigned char *str);
+extern void putch(char c);
+extern void puts(char *str);
 extern void settextcolor(enum vga_color forecolor, enum vga_color backcolor);
 extern void init_video();
 

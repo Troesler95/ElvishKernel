@@ -6,7 +6,9 @@
 *  infinite loop. This will be like our 'idle' loop */
 void kernel_main()
 {
-    /* You would add commands after here */
+    // install our custom global descriptor table
+    gdt_install();
+    // initialize terminal to black background w/ white text
     init_video();
     puts("Hello world!\n");
 }
